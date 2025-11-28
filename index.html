@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Birthday Seconds</title>
+
+<!-- CSS -->
+<style>
+  body {
+    position: relative;
+    background-color: #000;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  h1, p {
+    margin: 0;
+    padding: 0;
+  }
+
+  .firstWrappenBlock {
+    width: 70%;
+    height: 80%;
+    margin: 5% auto 0;
+    border: 4px dashed white;
+  }
+
+  .mainText {
+    color: #fff;
+    font-size: 3em;
+    margin: 1%;
+    text-align: center;
+  }
+
+  .sizeMiddle {
+    font-size: 2.5em;
+  }
+
+  .sizeMin {
+    font-size: 2.5em;
+  }
+
+  .sizeMikro {
+    display: inline-block;
+    font-size: 1em;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .timeDate_fulldontKnowTime {
+    display: none;
+  }
+
+  .timeDate_dontHave {
+    display: inline-block;
+    padding-top: 6px;
+    margin-left: 60%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .timeSpecification {
+    display: none;
+  }
+
+  .secondPhrase {
+    margin-top: 1%;
+  }
+
+  .birthDate, .birthTimeDate {
+    display: block;
+    width: 150px;
+    margin: 0 auto;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1em;
+    outline: none;
+  }
+
+  .confirmButton {
+    display: none;
+    border: 2px solid #773300;
+    clear: both;
+    text-align: center;
+    margin: 4% auto;
+    padding: 5px;
+    color: #fff;
+    font-size: 1.5em;
+    font-weight: bold;
+    background-color: #CC5500;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .confirmButton:hover {
+    background-color: #e45b00;
+  }
+
+  .confirmButton:active {
+    background-color: #964400;
+  }
+
+  .showTime {
+    position: relative;
+    display: none;
+    width: 100%;
+    height: 100%;
+    margin: 2% auto 0;
+  }
+
+  .mainShow {
+    position: absolute;
+    top: -4%;
+    left: 50%;
+    margin-left: -35%;
+    width: 70%;
+    height: 100%;
+  }
+
+  .yourLife {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 2%;
+    color: #ff0014;
+  }
+
+  .joke {
+    opacity: 0;
+    position: absolute;
+    left: 61%;
+    bottom: 40%;
+    transform: rotate(-15deg);
+    color: #ff0;
+    font-size: 2em;
+    font-weight: bold;
+  }
+
+  canvas {
+    display: block;
+  }
+</style>
+
+<!-- jQuery + datetimepicker CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
+</head>
+<body>
+
+<div class="firstWrappenBlock">
+    <h1 class="mainText"> Do you know when you were born ?</h1>
+    <input class="birthDate" type="text">
+    <div class="timeSpecification">
+        <h1 class="mainText sizeMiddle secondPhrase"> Perhaps you know the exact time?</h1>
+        <input class="birthTimeDate" type="text">
+    </div>
+    <label class="timeDate_fulldontKnowTime">
+        <input class="timeDate_dontHave" type="checkbox">
+        <p class="mainText sizeMikro">No, I don't know</p>
+    </label>
+
+    <button class="confirmButton">Confirm data</button>
+</div>
+
+<div class="showTime">
+    <div class="mainShow">
+        <h1 class="mainText">Happy birthday, my love</h1>
+        <p class="mainText sizeMiddle">You just broke your own lifetime record. You've officially lived longer than ever before.</p>
+        <p class="mainText sizeMin">You've already lived <br><span class="yourLife">0</span></p>
+
+        <p class="joke">900 сая секунд амьдарсан гэхээр бараг динозаврын үеийн хүн юм биш үү? хахахах</p>
+    </div>
+    <canvas id="canvas"></canvas>
+</div>
+
+<!-- JS -->
+<script>
+window.onload = function () {
+    var firstBlock = $(".firstWrappenBlock"),
+        secondBlock = $(".showTime"),
+        secondPhrase = $(".timeSpecification"),
+        fulldontKnowTime = $(".timeDate_fulldontKnowTime"),
+        dataOfBirthd = $(".birthDate"),
+        timeOfBirth = $(".birthTimeDate"),
+        withoutTime = $(".timeDate_dontHave"),
+        confirmButton = $(".confirmButton"),
+        joke = $(".joke");
+        yourLife = $(".yourLife");
+
+    var days, hours;
+
+    $.datetimepicker.setLocale('en');
+    dataOfBirthd.datetimepicker({
+        onGenerate: function () {
+            $('.xdsoft_datetimepicker').css({left: "42%", top: "18%"})
+        },
+        timepicker: false,
+        theme: 'dark',
+        format: 'd.m.Y'
+    });
+
+    timeOfBirth.datetimepicker({
+        onGenerate: function () {
+            $('.xdsoft_datetimepicker').css({left: "48%", top: "40%"})
+        },
+        datepicker: false,
+        theme: 'dark',
+        format: 'H:i'
+    });
+
+    dataOfBirthd.change(function () {
+        days = dataOfBirthd.val();
+        secondPhrase.slideDown();
+        confirmButton.show();
+        fulldontKnowTime.show();
+    });
+
+    timeOfBirth.change(function () {
+        hours = timeOfBirth.val();
+    });
+
+    confirmButton.on("click", function (event) {
+        firstBlock.hide();
+        secondBlock.slideDown(700);
+        timeRightNow();
+        event.preventDefault();
+    });
+
+    function timeRightNow() {
+        if(withoutTime.prop("checked") || $(".birthTimeDate").val()==""){
+            hours = "00:00";
+        }
+
+        var timeNow = new Date();
+        var timeNowInSec = Math.round(timeNow.getTime() / 1000);
+
+        var fullDate = days.split('.');
+        var fullHour = hours.split(':');
+
+        var DateOfYourBirthdayInSeconds =
+            timeOfBirthdayFull(fullDate[2], fullDate[1], fullDate[0], fullHour[0], fullHour[1]);
+
+        var currentNumber = timeNowInSec - DateOfYourBirthdayInSeconds;
+        var firsNumber = yourLife.text();
+
+        $({numberValue: firsNumber}).animate({numberValue: currentNumber}, {
+            duration: 4000,
+            easing: 'linear',
+            step: function() {
+                yourLife.text("≈ " + Math.ceil(this.numberValue) + " sec");
+            }
+        });
+
+        setTimeout(loop,3500);
+        setTimeout(showJoke,9000);
+    }
+
+    function timeOfBirthdayFull(year,month,day,hour,minute) {
+        return new Date(year, month - 1, day, hour, minute, 0, 0).getTime() / 1000;
+    }
+
+    function showJoke() {
+        joke.fadeTo(800, 1);
+    }
+
+    // Fireworks
+    var canvas = $('#canvas')[0];
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var ctx = canvas.getContext('2d');
+
+    $(window).on('resize', function () {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    var listFire = [];
+    var listFirework = [];
+    var fireNumber = 10;
+    var center = {x: canvas.width / 2, y: canvas.height / 2};
+    var range = 100;
+
+    for (var i = 0; i < fireNumber; i++) {
+        var fire = {
+            x: Math.random() * range / 2 - range / 4 + center.x,
+            y: Math.random() * range * 2 + canvas.height,
+            size: Math.random() + 0.5,
+            fill: '#fcff89',
+            vx: Math.random() - 0.5,
+            vy: -(Math.random() + 4),
+            ax: Math.random() * 0.02 - 0.01,
+            far: Math.random() * range + (center.y - range)
+        };
+        fire.base = {x: fire.x, y: fire.y, vx: fire.vx};
+        listFire.push(fire);
+    }
+
+    function randColor() {
+        return "rgb(" +
+            Math.floor(Math.random()*256)+","+
+            Math.floor(Math.random()*256)+","+
+            Math.floor(Math.random()*256)+")";
+    }
+
+    function loop() {
+        requestAnimationFrame(loop);
+        update();
+        draw();
+    }
+
+    function update() {
+        for (var i = 0; i < listFire.length; i++) {
+            var fire = listFire[i];
+            if (fire.y <= fire.far) {
+                var color = randColor();
+                for (var k = 0; k < fireNumber * 5; k++) {
+                    var fw = {
+                        x: fire.x,
+                        y: fire.y,
+                        size: Math.random() + 1.5,
+                        fill: color,
+                        vx: Math.random() * 5 - 2.5,
+                        vy: Math.random() * -5 + 1.5,
+                        ay: 0.05,
+                        alpha: 1,
+                        life: Math.round(Math.random() * range / 2) + range / 2
+                    };
+                    fw.base = {life: fw.life, size: fw.size};
+                    listFirework.push(fw);
+                }
+                fire.y = fire.base.y;
+                fire.x = fire.base.x;
+                fire.vx = fire.base.vx;
+                fire.ax = Math.random() * 0.02 - 0.01;
+            }
+            fire.x += fire.vx;
+            fire.y += fire.vy;
+            fire.vx += fire.ax;
+        }
+
+        for (var j = listFirework.length - 1; j >= 0; j--) {
+            var fw2 = listFirework[j];
+            fw2.x += fw2.vx;
+            fw2.y += fw2.vy;
+            fw2.vy += fw2.ay;
+            fw2.alpha = fw2.life / fw2.base.life;
+            fw2.size = fw2.alpha * fw2.base.size;
+            if (fw2.life-- <= 0) listFirework.splice(j, 1);
+        }
+    }
+
+    function draw() {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 0.18;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = 1;
+
+        listFire.forEach(f => {
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+            ctx.fillStyle = f.fill;
+            ctx.fill();
+        });
+
+        listFirework.forEach(fw => {
+            ctx.globalAlpha = fw.alpha;
+            ctx.beginPath();
+            ctx.arc(fw.x, fw.y, fw.size, 0, Math.PI * 2);
+            ctx.fillStyle = fw.fill;
+            ctx.fill();
+        });
+    }
+};
+</script>
+
+</body>
+</html>
